@@ -24,6 +24,10 @@ public class StockItemService {
     public Optional<StockItem> getStockItemById(UUID id) {
         return stockItemRepository.findById(id);
     }
+    public Integer getQuantityAvailableByDrugCode(String DrugCode){
+        Optional<StockItem> item = stockItemRepository.findByDrugCode(DrugCode);
+        return item.map(StockItem::getQuantityAvailable).orElse(null);
+    }
 
     public StockItem saveStockItem(StockItem stockItem) {
         return stockItemRepository.save(stockItem);
