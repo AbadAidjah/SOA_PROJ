@@ -16,7 +16,7 @@ public class ReservationLine {
     private int qtyReserved;
 
     @ManyToOne
-    @JoinColumn(name = "reservation_id", referencedColumnName = "reservationId", insertable = false, updatable = false)
+    @JoinColumn(name = "reservation_id", referencedColumnName = "reservationId")
     private Reservation reservation;
 
     public ReservationLine() {
