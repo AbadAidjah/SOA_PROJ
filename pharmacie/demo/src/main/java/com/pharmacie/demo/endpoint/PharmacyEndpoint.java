@@ -4,6 +4,9 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pharmacie.demo.service.StockItemService;
@@ -15,6 +18,8 @@ import com.pharmacie.demo.GetStockRequest;
 import com.pharmacie.demo.GetStockResponse;
 import com.pharmacie.demo.ReserveMedicinesRequest;
 import com.pharmacie.demo.ReserveMedicinesResponse;
+import com.pharmacie.demo.model.Reservation;
+import com.pharmacie.demo.model.ReservationLine;
 import com.pharmacie.demo.CancelReservationRequest;
 import com.pharmacie.demo.CancelReservationResponse;
 import com.pharmacie.demo.DispenseReservationRequest;
@@ -46,8 +51,30 @@ public class PharmacyEndpoint {
     @ResponsePayload
     public ReserveMedicinesResponse reserveMedicines(@RequestPayload ReserveMedicinesRequest request) {
         ReserveMedicinesResponse response = new ReserveMedicinesResponse();
-        
-       
+        Reservation reservation = new Reservation();
+        reservation.setReservationId(UUID.randomUUID().toString());
+        // reservation.setStatus(Reservation.ReservationStatus.);
+         reservationService.saveReservation(reservation);
+        for(ReserveMedicinesRequest.Items item: request.getItems()){
+
+            Integer available = stockItemService.getQuantityAvailableByDrugCode(item.getDrugCode());
+            if(available == null || available < item.getQtyReserved()){
+            response.setStatus("FAILED");
+            response.setMessage("aucun quantiter sufisante de ce drug " + item.getDrugCode());
+            return response;
+            }
+            ReservationLine line = new ReservationLine();
+            line.setDrugCode(item.getDrugCode());
+            line.setQtyReserved(item.getQtyReserved());
+            line.setReservation(reservation);
+            reservationLineService.saveReservationLine(line);
+
+        }
+        reservation.setStatus(Reservation.ReservationStatus.RESERVED);
+        reservationService.saveReservation(reservation);
+       response.setReservationId(reservation.getReservationId().toString());
+       response.setStatus("SUCCESS");
+       response.setMessage("Reservation a ete creer ");
         return response;
     }
 
