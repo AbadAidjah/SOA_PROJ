@@ -63,11 +63,13 @@ public class PharmacyEndpoint {
             response.setMessage("aucun quantiter sufisante de ce drug " + item.getDrugCode());
             return response;
             }
+            
             ReservationLine line = new ReservationLine();
             line.setDrugCode(item.getDrugCode());
             line.setQtyReserved(item.getQtyReserved());
             line.setReservation(reservation);
             reservationLineService.saveReservationLine(line);
+            stockItemService.setQuantityAvailableByDrugCode(item.getDrugCode(), item.getQtyReserved());
 
         }
         reservation.setStatus(Reservation.ReservationStatus.RESERVED);
@@ -75,6 +77,7 @@ public class PharmacyEndpoint {
        response.setReservationId(reservation.getReservationId().toString());
        response.setStatus("SUCCESS");
        response.setMessage("Reservation a ete creer ");
+       
         return response;
     }
 
