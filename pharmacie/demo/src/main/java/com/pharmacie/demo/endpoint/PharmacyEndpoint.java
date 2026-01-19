@@ -68,6 +68,7 @@ public class PharmacyEndpoint {
             line.setDrugCode(item.getDrugCode());
             line.setQtyReserved(item.getQtyReserved());
             line.setReservation(reservation);
+            //
             reservationLineService.saveReservationLine(line);
             stockItemService.setQuantityAvailableByDrugCode(item.getDrugCode(), item.getQtyReserved());
 
