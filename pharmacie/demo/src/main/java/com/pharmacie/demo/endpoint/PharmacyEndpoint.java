@@ -78,19 +78,19 @@ public class PharmacyEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "cancelReservationRequest")
-    @ResponsePayload
-    public CancelReservationResponse cancelReservation(@RequestPayload CancelReservationRequest request) {
-        CancelReservationResponse response = new CancelReservationResponse();
+    // @PayloadRoot(namespace = NAMESPACE_URI, localPart = "cancelReservationRequest")
+    // @ResponsePayload
+    // public CancelReservationResponse cancelReservation(@RequestPayload CancelReservationRequest request) {
+    //     CancelReservationResponse response = new CancelReservationResponse();
         
-        return response;
-    }
+    //     return response;
+    // }
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "dispenseReservationRequest")
-    @ResponsePayload
-    public DispenseReservationResponse dispenseReservation(@RequestPayload DispenseReservationRequest request) {
-        DispenseReservationResponse response = new DispenseReservationResponse();
+    // @PayloadRoot(namespace = NAMESPACE_URI, localPart = "dispenseReservationRequest")
+    // @ResponsePayload
+    // public DispenseReservationResponse dispenseReservation(@RequestPayload DispenseReservationRequest request) {
+    //     DispenseReservationResponse response = new DispenseReservationResponse();
        
-        return response;
-    }
+    //     return response;
+    // }
 }
