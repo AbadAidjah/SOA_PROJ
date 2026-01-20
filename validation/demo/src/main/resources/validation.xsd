@@ -1,0 +1,30 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://validation.com/validation"
+           targetNamespace="http://validation.com/validation"
+           elementFormDefault="qualified">
+
+     <xs:element name="reserveMedicinesRequest" type="tns:ReserveMedicinesRequest"/>
+  <xs:element name="reserveMedicinesResponse" type="tns:ReserveMedicinesResponse"/>
+
+  <xs:complexType name="ReserveMedicinesRequest">
+    <xs:sequence>
+      <xs:element name="items" type="tns:ReserveItem" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ReserveItem">
+    <xs:sequence>
+      <xs:element name="drugCode" type="xs:string"/>
+      <xs:element name="qtyReserved" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ReserveMedicinesResponse">
+    <xs:sequence>
+      <xs:element name="reservationId" type="xs:string"/>
+      <xs:element name="status" type="xs:string"/>
+      <xs:element name="message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

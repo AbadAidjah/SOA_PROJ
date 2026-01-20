@@ -28,6 +28,20 @@ public class StockItemService {
         Optional<StockItem> item = stockItemRepository.findByDrugCode(DrugCode);
         return item.map(StockItem::getQuantityAvailable).orElse(null);
     }
+    public boolean setQuantityAvailableByDrugCode(String DrugCode, int newQty){
+        Optional<StockItem> itemOpt = stockItemRepository.findByDrugCode(DrugCode);
+        if(itemOpt.isPresent()){
+            StockItem item = itemOpt.get();
+            int currentQty = item.getQuantityAvailable();
+            if(currentQty >= newQty){
+                item.setQuantityAvailable(currentQty - newQty);
+                stockItemRepository.save(item);
+                return true;
+            }
+            
+        }
+        return false;
+    }
 
     public StockItem saveStockItem(StockItem stockItem) {
         return stockItemRepository.save(stockItem);
