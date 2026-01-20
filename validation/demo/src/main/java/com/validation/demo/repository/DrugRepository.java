@@ -1,7 +1,9 @@
 package com.validation.demo.repository;
 
-import com.validation.demo.model.Drug;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.validation.demo.model.Drug;
+
 import java.util.List;
 import java.util.Optional;
 

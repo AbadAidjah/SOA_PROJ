@@ -1,11 +1,12 @@
 package com.validation.demo.controller;
 
-import com.validation.demo.model.Drug;
-import com.validation.demo.service.ValidationService;
-import com.validation.demo.service.ValidationService.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.validation.demo.model.Drug;
+import com.validation.demo.service.ValidationService;
+import com.validation.demo.service.ValidationService.ValidationResult;
 
 import java.util.List;
 import java.util.Map;

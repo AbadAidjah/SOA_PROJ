@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: td1-postgres-soap
+    environment:
+      POSTGRES_DB: pharmacie
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: A@077068
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./pharmacie_backup_2.sql:/docker-entrypoint-initdb.d/pharmacie_backup_2.sql:ro
+    networks:
+      - test-network
+
+  pharmacie:
+    build: ./pharmacie/demo
+    container_name: pharmacie-backend-soap
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pharmacie
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: A@077068
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - test-network
+
+  validation:
+    build: ./validation/demo
+    container_name: validation-backend-soap
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pharmacie
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: A@077068
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SERVER_PORT: 8081
+      PHARMACIE_SOAP_URL: http://pharmacie:8080/ws
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - pharmacie
+    networks:
+      - test-network
+
+  
+
+networks:
+  test-network:
+    driver: bridge

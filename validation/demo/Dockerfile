@@ -1,10 +1,12 @@
-FROM openjdk:24-jdk
+# FROM openjdk:24-jdk
+FROM eclipse-temurin:21-jre
+
 WORKDIR /app
 COPY mvnw .
 COPY mvnw.cmd .
 COPY pom.xml .
 COPY .mvn .mvn
-
+# COPY settings.xml /root/.m2/settings.xml
 
 RUN chmod +x ./mvnw
 # RUN chmod +x ./gradlew
