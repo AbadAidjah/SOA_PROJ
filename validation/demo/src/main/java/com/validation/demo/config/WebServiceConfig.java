@@ -44,8 +44,8 @@ public class WebServiceConfig {
     //     return new WebServiceTemplate();
     // }
 
-    @Value("${soap.server.url}")
-    private String soapServerUrl;
+    @Value("${pharmacie.soap.url}")
+    private String pharmacieSoapUrl;
 
     @Bean
     public Jaxb2Marshaller marshaller() {
@@ -59,7 +59,7 @@ public class WebServiceConfig {
         WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setMarshaller(marshaller);
         webServiceTemplate.setUnmarshaller(marshaller);
-        webServiceTemplate.setDefaultUri(soapServerUrl);
+        webServiceTemplate.setDefaultUri(pharmacieSoapUrl);
         return webServiceTemplate;
     }
 }

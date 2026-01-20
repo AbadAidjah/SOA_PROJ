@@ -1,12 +1,20 @@
 
 package com.validation.demo.service;
 
+import com.validation.demo.controller.DrugController;
 import com.validation.demo.model.Drug;
 import com.validation.demo.model.DrugInteraction;
 import com.validation.demo.repository.DrugRepository;
+import com.validation.validation.ReserveMedicinesRequest;
+import com.validation.validation.ReserveMedicinesResponse;
+import com.validation.validation.ReserveItem;
 import com.validation.demo.repository.DrugInteractionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.ws.client.core.WebServiceMessageCallback;
+import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.soap.SoapMessage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,52 +28,87 @@ public class ValidationService {
 	@Autowired
 	private DrugInteractionRepository drugInteractionRepository;
 
+	@Autowired
+	private WebServiceTemplate webServiceTemplate;
+
+	private final com.validation.validation.ObjectFactory pharmacieObjectFactory = new com.validation.validation.ObjectFactory();
+
+	@Value("${pharmacie.soap.url}")
+	private String pharmacieSoapUrl;
+
 	public List<Drug> getAllDrugs() {
 		return drugRepository.findAll();
 	}
 
-	public ValidationResult validateDrugs(List<String> drugNames) {
-		// 1. Map names to Drug objects
-		List<Drug> drugs = drugRepository.findByNameIn(drugNames);
-		Map<String, String> nameToId = drugs.stream()
-				.collect(Collectors.toMap(Drug::getName, Drug::getId));
+	public ValidationResult validateDrugs(List<DrugController.DrugRequest> drugRequests) {
+    List<String> drugNames = drugRequests.stream().map(d -> d.name).toList();
+    Map<String, Integer> nameToQty = drugRequests.stream()
+            .collect(Collectors.toMap(d -> d.name, d -> d.quantity));
+    List<Drug> drugs = drugRepository.findByNameIn(drugNames);
+    Map<String, String> nameToId = drugs.stream()
+            .collect(Collectors.toMap(Drug::getName, Drug::getId));
 
-		// 2. Generate all unique pairs (unordered)
-		List<String> ids = new ArrayList<>(nameToId.values());
-		Set<Pair> pairs = new HashSet<>();
-		for (int i = 0; i < ids.size(); i++) {
-			for (int j = i + 1; j < ids.size(); j++) {
-				String a = ids.get(i);
-				String b = ids.get(j);
-				pairs.add(new Pair(a, b));
-			}
-		}
+    List<String> ids = new ArrayList<>(nameToId.values());
+    Set<Pair> pairs = new HashSet<>();
+    for (int i = 0; i < ids.size(); i++) {
+        for (int j = i + 1; j < ids.size(); j++) {
+            String a = ids.get(i);
+            String b = ids.get(j);
+            pairs.add(new Pair(a, b));
+        }
+    }
 
-		// 3. Check interactions
-		List<Issue> issues = new ArrayList<>();
-		boolean block = false;
-		for (Pair pair : pairs) {
-			Optional<DrugInteraction> interaction = drugInteractionRepository.findByDrugAAndDrugB(pair.a, pair.b);
-			if (!interaction.isPresent()) {
- 		   interaction = drugInteractionRepository.findByDrugAAndDrugB(pair.b, pair.a);
-			}
-			if (interaction.isPresent()) {
-				String level = interaction.get().getLevel();
-				if ("MAJOR".equalsIgnoreCase(level) || "CONTRAINDICATED".equalsIgnoreCase(level)) {
-					block = true;
-				}
-				issues.add(new Issue(pair.a, pair.b, level));
-			}
-		}
+    List<Issue> issues = new ArrayList<>();
+    boolean block = false;
+    for (Pair pair : pairs) {
+        Optional<DrugInteraction> interaction = drugInteractionRepository.findByDrugAAndDrugB(pair.a, pair.b);
+        if (!interaction.isPresent()) {
+            interaction = drugInteractionRepository.findByDrugAAndDrugB(pair.b, pair.a);
+        }
+        if (interaction.isPresent()) {
+            String level = interaction.get().getLevel();
+            if ("MAJOR".equalsIgnoreCase(level) || "CONTRAINDICATED".equalsIgnoreCase(level)) {
+                block = true;
+            }
+            issues.add(new Issue(pair.a, pair.b, level));
+        }
+    }
 
-		ValidationResult result = new ValidationResult();
-		result.setOk(!block);
-		result.setIssues(issues);
-		result.setMappedItems(drugs);
-		return result;
-	}
+    ValidationResult result = new ValidationResult();
+    result.setOk(!block);
+    result.setIssues(issues);
+    result.setMappedItems(drugs);
 
-	// Helper classes
+    if (result.isOk() && !drugs.isEmpty()) {
+		System.out.println("the block is entereddddd");
+        try {
+            // ReserveMedicinesRequest soapRequest = pharmacieObjectFactory.createReserveMedicinesRequest();
+			ReserveMedicinesRequest soapRequest = new ReserveMedicinesRequest();
+			System.out.println("the block is entereddddd22222222");
+            for (Drug drug : drugs) {
+                ReserveItem item = new ReserveItem();
+                item.setDrugCode(drug.getId());
+                item.setQtyReserved(nameToQty.getOrDefault(drug.getName(), 1));
+                soapRequest.getItems().add(item);
+				System.out.println("the block is entereddddd333333333");
+            }
+            WebServiceMessageCallback messageCallback = message -> {
+                if (message instanceof SoapMessage soapMessage) {
+                    soapMessage.setSoapAction("");
+                }
+            };
+            ReserveMedicinesResponse soapResponse = (ReserveMedicinesResponse)
+                    webServiceTemplate.marshalSendAndReceive(pharmacieSoapUrl, soapRequest, messageCallback);
+							System.out.println("the block is entereddddd444444444444");
+					System.out.println("SOAP response: " + soapResponse.getStatus() + " - " + soapResponse.getMessage());
+        } catch (Exception e) {
+            System.err.println("SOAP request failed: " + e.getMessage());
+        }
+    }
+    return result;
+}
+
+	
 	public static class Pair {
 		public String a;
 		public String b;

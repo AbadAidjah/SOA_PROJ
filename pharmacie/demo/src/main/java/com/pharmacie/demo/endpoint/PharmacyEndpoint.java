@@ -50,6 +50,7 @@ public class PharmacyEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "reserveMedicinesRequest")
     @ResponsePayload
     public ReserveMedicinesResponse reserveMedicines(@RequestPayload ReserveMedicinesRequest request) {
+        System.out.println("reserveMedicines called with items: " + request.getItems());
         ReserveMedicinesResponse response = new ReserveMedicinesResponse();
         Reservation reservation = new Reservation();
         reservation.setReservationId(UUID.randomUUID().toString());

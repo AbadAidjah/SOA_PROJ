@@ -17,6 +17,10 @@ public class DrugController {
     @Autowired
     private ValidationService validationService;
 
+    public static class DrugRequest {
+    public String name;
+    public int quantity;
+    }
     
     @GetMapping("/drugs")
     public List<Drug> getAllDrugs() {
@@ -25,12 +29,12 @@ public class DrugController {
 
     
     @PostMapping("/validate")
-    public ResponseEntity<ValidationResult> validateDrugs(@RequestBody Map<String, List<String>> request) {
-        List<String> drugNames = request.get("drugNames");
-        if (drugNames == null || drugNames.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        ValidationResult result = validationService.validateDrugs(drugNames);
-        return ResponseEntity.ok(result);
+public ResponseEntity<ValidationResult> validateDrugs(@RequestBody Map<String, List<DrugRequest>> request) {
+    List<DrugRequest> drugs = request.get("drugs");
+    if (drugs == null || drugs.isEmpty()) {
+        return ResponseEntity.badRequest().build();
     }
+    ValidationResult result = validationService.validateDrugs(drugs);
+    return ResponseEntity.ok(result);
+}
 }
