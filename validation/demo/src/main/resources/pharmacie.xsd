@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://pharmacie.com/demo"
+           targetNamespace="http://pharmacie.com/demo"
+           elementFormDefault="qualified">
+
+  <!-- ROOT ELEMENTS (INLINE TYPES => @XmlRootElement WILL BE GENERATED) -->
+
+  <xs:element name="reserveMedicinesRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="items" type="tns:ReserveItem" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="reserveMedicinesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="reservationId" type="xs:string"/>
+        <xs:element name="status" type="xs:string"/>
+        <xs:element name="message" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- SHARED TYPES -->
+
+  <xs:complexType name="ReserveItem">
+    <xs:sequence>
+      <xs:element name="drugCode" type="xs:string"/>
+      <xs:element name="qtyReserved" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+

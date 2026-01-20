@@ -25,19 +25,19 @@ public class WebServiceConfig {
         return new ServletRegistrationBean<>(servlet, "/ws/*");
     }
 
-    @Bean(name = "ValidationService")
+    @Bean(name = "PharmacyService")
     public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema serversSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-        wsdl11Definition.setPortTypeName("ValidationPort");
+        wsdl11Definition.setPortTypeName("PharmacyPort");
         wsdl11Definition.setLocationUri("/ws");
-        wsdl11Definition.setTargetNamespace("http://validation.com/validation");
+        wsdl11Definition.setTargetNamespace("http://pharmacie.com/demo");
         wsdl11Definition.setSchema(serversSchema);
         return wsdl11Definition;
     }
 
     @Bean
     public XsdSchema serversSchema() {
-        return new SimpleXsdSchema(new ClassPathResource("validation.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource("pharmacie.xsd"));
     }
     // @Bean
     // public WebServiceTemplate webServiceTemplate(){
@@ -50,7 +50,7 @@ public class WebServiceConfig {
     @Bean
     public Jaxb2Marshaller marshaller() {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("com.validation.validation");
+        marshaller.setContextPath("com.pharmacie.demo");
         return marshaller;
     }
 // 

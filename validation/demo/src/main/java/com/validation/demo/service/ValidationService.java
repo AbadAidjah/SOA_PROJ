@@ -1,20 +1,24 @@
 
 package com.validation.demo.service;
 
-import com.validation.demo.controller.DrugController;
-import com.validation.demo.model.Drug;
-import com.validation.demo.model.DrugInteraction;
-import com.validation.demo.repository.DrugRepository;
-import com.validation.validation.ReserveMedicinesRequest;
-import com.validation.validation.ReserveMedicinesResponse;
-import com.validation.validation.ReserveItem;
-import com.validation.demo.repository.DrugInteractionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.SoapMessage;
+
+import com.pharmacie.demo.ReserveItem;
+import com.pharmacie.demo.ReserveMedicinesRequest;
+import com.pharmacie.demo.ReserveMedicinesResponse;
+import com.validation.demo.controller.DrugController;
+import com.validation.demo.model.Drug;
+import com.validation.demo.model.DrugInteraction;
+import com.validation.demo.repository.DrugInteractionRepository;
+import com.validation.demo.repository.DrugRepository;
+// import com.validation.validation.ReserveItem;
+// import com.validation.validation.ReserveMedicinesRequest;
+// import com.validation.validation.ReserveMedicinesResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,7 +35,7 @@ public class ValidationService {
 	@Autowired
 	private WebServiceTemplate webServiceTemplate;
 
-	private final com.validation.validation.ObjectFactory pharmacieObjectFactory = new com.validation.validation.ObjectFactory();
+	// private final com.validation.validation.ObjectFactory pharmacieObjectFactory = new com.validation.validation.ObjectFactory();
 
 	@Value("${pharmacie.soap.url}")
 	private String pharmacieSoapUrl;
@@ -143,7 +147,7 @@ public class ValidationService {
 			this.drugB = drugB;
 			this.level = level;
 		}
-		// getters/setters if needed
+		
 	}
 
 	public static class ValidationResult {
