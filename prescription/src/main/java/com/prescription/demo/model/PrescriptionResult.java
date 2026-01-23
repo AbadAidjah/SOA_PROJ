@@ -1,4 +1,4 @@
-package main.java.com.prescription.demo.model;
+package com.prescription.demo.model;
 
 public class PrescriptionResult {
 

@@ -1,4 +1,4 @@
-package main.java.com.prescription.demo;
+package com.prescription.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
