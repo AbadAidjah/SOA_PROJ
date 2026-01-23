@@ -1,5 +1,5 @@
 # FROM openjdk:24-jdk
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 COPY mvnw .

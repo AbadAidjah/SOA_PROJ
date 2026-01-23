@@ -14,6 +14,11 @@ services:
       - ./pharmacie_backup_2.sql:/docker-entrypoint-initdb.d/pharmacie_backup_2.sql:ro
     networks:
       - test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   pharmacie:
     build: ./pharmacie/demo
@@ -27,7 +32,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - test-network
 
@@ -44,12 +50,29 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - postgres
-      - pharmacie
+      postgres:
+        condition: service_healthy
+      pharmacie:
+        condition: service_started
     networks:
       - test-network
 
-  
+  prescription:
+    build: ./prescription-service/demo
+    container_name: prescription-backend-soap
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pharmacie
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: A@077068
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SERVER_PORT: 8082
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - test-network
 
 networks:
   test-network:
