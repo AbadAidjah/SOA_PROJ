@@ -1,9 +1,0 @@
-{
-  "prescriptionId": "PRES-001",
-  "drugs": [
-    {
-      "name": "Iohexol",
-      "quantity": 5
-    }
-  ]
-}
