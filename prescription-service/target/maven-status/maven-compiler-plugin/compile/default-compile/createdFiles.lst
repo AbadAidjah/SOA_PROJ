@@ -1,0 +1,11 @@
+com/prescription/demo/DemoApplication.class
+com/prescription/demo/service/PrescriptionService.class
+com/prescription/demo/repository/PrescriptionRepository.class
+com/prescription/demo/service/ValidationServiceClient$ValidationResult.class
+com/prescription/demo/model/PrescriptionItem.class
+com/prescription/demo/service/ValidationServiceClient.class
+com/prescription/demo/model/PrescriptionStatus.class
+com/prescription/demo/service/ExternalServiceClient.class
+com/prescription/demo/model/Prescription.class
+com/prescription/demo/service/PrescriptionServiceImpl.class
+com/prescription/demo/controller/PrescriptionController.class

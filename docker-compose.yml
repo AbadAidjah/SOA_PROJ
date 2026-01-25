@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
-    container_name: td1-postgres-soap
+    container_name: postgres
     environment:
       POSTGRES_DB: pharmacie
       POSTGRES_USER: postgres
@@ -45,6 +45,24 @@ services:
       - "8081:8081"
     depends_on:
       - postgres
+      - pharmacie
+    networks:
+      - test-network
+
+  prescription:
+    build: ./prescription-service
+    container_name: prescription-backend
+    environment:
+      SERVER_PORT: 8082
+      VALIDATION_SERVICE_URL: http://validation:8081/api/validate
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pharmacie
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: A@077068
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+    ports:
+      - "8082:8082"
+    depends_on:
+      - validation
       - pharmacie
     networks:
       - test-network

@@ -78,38 +78,38 @@ public class ValidationService {
         }
     }
 
-    ValidationResult result = new ValidationResult();
-    result.setOk(!block);
-    result.setIssues(issues);
-    result.setMappedItems(drugs);
+	ValidationResult result = new ValidationResult();
+	result.setOk(!block);
+	result.setIssues(issues);
+	result.setMappedItems(drugs);
 
-    if (result.isOk() && !drugs.isEmpty()) {
+	if (result.isOk() && !drugs.isEmpty()) {
 		System.out.println("the block is entereddddd");
-        try {
-            // ReserveMedicinesRequest soapRequest = pharmacieObjectFactory.createReserveMedicinesRequest();
+		try {
 			ReserveMedicinesRequest soapRequest = new ReserveMedicinesRequest();
 			System.out.println("the block is entereddddd22222222");
-            for (Drug drug : drugs) {
-                ReserveItem item = new ReserveItem();
-                item.setDrugCode(drug.getId());
-                item.setQtyReserved(nameToQty.getOrDefault(drug.getName(), 1));
-                soapRequest.getItems().add(item);
+			for (Drug drug : drugs) {
+				ReserveItem item = new ReserveItem();
+				item.setDrugCode(drug.getId());
+				item.setQtyReserved(nameToQty.getOrDefault(drug.getName(), 1));
+				soapRequest.getItems().add(item);
 				System.out.println("the block is entereddddd333333333");
-            }
-            WebServiceMessageCallback messageCallback = message -> {
-                if (message instanceof SoapMessage soapMessage) {
-                    soapMessage.setSoapAction("");
-                }
-            };
-            ReserveMedicinesResponse soapResponse = (ReserveMedicinesResponse)
-                    webServiceTemplate.marshalSendAndReceive(pharmacieSoapUrl, soapRequest, messageCallback);
-							System.out.println("the block is entereddddd444444444444");
-					System.out.println("SOAP response: " + soapResponse.getStatus() + " - " + soapResponse.getMessage());
-        } catch (Exception e) {
-            System.err.println("SOAP request failed: " + e.getMessage());
-        }
-    }
-    return result;
+			}
+			WebServiceMessageCallback messageCallback = message -> {
+				if (message instanceof SoapMessage soapMessage) {
+					soapMessage.setSoapAction("");
+				}
+			};
+			ReserveMedicinesResponse soapResponse = (ReserveMedicinesResponse)
+					webServiceTemplate.marshalSendAndReceive(pharmacieSoapUrl, soapRequest, messageCallback);
+			System.out.println("the block is entereddddd444444444444");
+			System.out.println("SOAP response: " + soapResponse.getStatus() + " - " + soapResponse.getMessage());
+			result.setReservationId(soapResponse.getReservationId());
+		} catch (Exception e) {
+			System.err.println("SOAP request failed: " + e.getMessage());
+		}
+	}
+	return result;
 }
 
 	
@@ -154,6 +154,7 @@ public class ValidationService {
 		private boolean ok;
 		private List<Issue> issues;
 		private List<Drug> mappedItems;
+		private String reservationId;
 
 		public boolean isOk() { return ok; }
 		public void setOk(boolean ok) { this.ok = ok; }
@@ -161,6 +162,8 @@ public class ValidationService {
 		public void setIssues(List<Issue> issues) { this.issues = issues; }
 		public List<Drug> getMappedItems() { return mappedItems; }
 		public void setMappedItems(List<Drug> mappedItems) { this.mappedItems = mappedItems; }
+		public String getReservationId() { return reservationId; }
+		public void setReservationId(String reservationId) { this.reservationId = reservationId; }
 	}
 }
 
