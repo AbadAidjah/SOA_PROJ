@@ -5,7 +5,7 @@ toolchain:
   images:
     # Use versions you want; pipeline just uses these strings as docker images.
     java-maven: maven:3.9.6-eclipse-temurin-17
-    node:  node:20-alpine
+    nodejs:  node:20-alpine
 
 docker:
   pushEnabled: false            # set true when you want pushes
