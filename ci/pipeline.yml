@@ -31,7 +31,7 @@ services:
   # -------------------------
   - name: pharmacie
     type: java-maven
-    path: pharmacie
+    path: pharmacie/demo
     commands:
       install: "test -f mvnw && ./mvnw -q dependency:resolve || mvn -q dependency:resolve"
       build:   "test -f mvnw && ./mvnw -q -DskipTests package || mvn -q -DskipTests package"
@@ -45,7 +45,7 @@ services:
   # -------------------------
   - name: validation
     type: java-maven
-    path: validation
+    path: validation/demo
     commands:
       install: "test -f mvnw && ./mvnw -q dependency:resolve || mvn -q dependency:resolve"
       build:   "test -f mvnw && ./mvnw -q -DskipTests package || mvn -q -DskipTests package"
