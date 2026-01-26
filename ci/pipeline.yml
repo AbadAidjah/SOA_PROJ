@@ -1,0 +1,83 @@
+# ci/pipeline.yml
+
+toolchain:
+  mode: container
+  images:
+    # Use versions you want; pipeline just uses these strings as docker images.
+    maven: maven:3.9.6-eclipse-temurin-17
+    node:  node:20-alpine
+
+docker:
+  pushEnabled: false            # set true when you want pushes
+  allowedBranches: ["test"]
+  registryUrlCred: docker-registry-url
+  namespaceCred: docker-registry-name
+  tokenCred: do-registry-token
+
+junitPattern: "**/test-results/*.xml"
+
+integration:
+  enabled: true                 # you have docker-compose.yml in root
+  composeFile: docker-compose.yml
+  startupSeconds: 15
+  command: ""                   # optional: e.g. "curl -f http://localhost:8080/health"
+
+tests:
+  strict: false                 # if true, test failures fail the build
+
+services:
+  # -------------------------
+  # 1) pharmacie (Java/Maven)
+  # -------------------------
+  - name: pharmacie
+    type: java-maven
+    path: pharmacie
+    commands:
+      install: "test -f mvnw && ./mvnw -q dependency:resolve || mvn -q dependency:resolve"
+      build:   "test -f mvnw && ./mvnw -q -DskipTests package || mvn -q -DskipTests package"
+      test:    "test -f mvnw && ./mvnw -q test || mvn -q test || true"
+    docker:
+      dockerfile: pharmacie/demo/Dockerfile
+      context: .
+
+  # -------------------------
+  # 2) validation (Java/Maven)
+  # -------------------------
+  - name: validation
+    type: java-maven
+    path: validation
+    commands:
+      install: "test -f mvnw && ./mvnw -q dependency:resolve || mvn -q dependency:resolve"
+      build:   "test -f mvnw && ./mvnw -q -DskipTests package || mvn -q -DskipTests package"
+      test:    "test -f mvnw && ./mvnw -q test || mvn -q test || true"
+    docker:
+      dockerfile: validation/demo/Dockerfile
+      context: .
+
+  # -----------------------------------
+  # 3) prescription-service (Java/Maven)
+  # -----------------------------------
+  - name: prescription-service
+    type: java-maven
+    path: prescription-service
+    commands:
+      install: "test -f mvnw && ./mvnw -q dependency:resolve || mvn -q dependency:resolve"
+      build:   "test -f mvnw && ./mvnw -q -DskipTests package || mvn -q -DskipTests package"
+      test:    "test -f mvnw && ./mvnw -q test || mvn -q test || true"
+    docker:
+      dockerfile: prescription-service/Dockerfile
+      context: .
+
+  # -------------------------
+  # 4) front (Node/React/Vite)
+  # -------------------------
+  - name: front
+    type: nodejs
+    path: front
+    commands:
+      install: "npm ci || npm install"
+      build:   "npm run build"
+      test:    "npm test || true"
+    docker:
+      dockerfile: front/Dockerfile
+      context: .
