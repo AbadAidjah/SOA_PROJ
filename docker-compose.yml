@@ -1,3 +1,4 @@
+
 version: '3.8'
 
 services:
@@ -11,6 +12,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
+      # - pgdata:/var/lib/postgresql/data
       - ./pharmacie_backup_2.sql:/docker-entrypoint-initdb.d/pharmacie_backup_2.sql:ro
     networks:
       - test-network
@@ -66,9 +68,25 @@ services:
       - pharmacie
     networks:
       - test-network
+    
+  front:
+    build: ./front
+    container_name: front-app
+    environment:
+      - VITE_API_URL=http://prescription-backend:8082/api/prescriptions
+      - VITE_DRUGS_API_URL=http://validation-backend-soap:8081/api/drugs
+    ports:
+      - "3000:80"
+    depends_on:
+      - prescription
+    networks:
+      - test-network    
 
   
 
 networks:
   test-network:
     driver: bridge
+
+volumes:
+  pgdata:

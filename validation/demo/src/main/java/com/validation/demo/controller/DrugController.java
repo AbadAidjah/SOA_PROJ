@@ -27,6 +27,20 @@ public class DrugController {
     public List<Drug> getAllDrugs() {
         return validationService.getAllDrugs();
     }
+    @GetMapping("/drugsLimit")
+public List<Drug> getDrugs(
+        @RequestParam(value = "search", required = false) String search,
+        @RequestParam(value = "limit", required = false, defaultValue = "50") int limit) {
+    List<Drug> allDrugs = validationService.getAllDrugs();
+    // Filter by search if provided
+    if (search != null && !search.isEmpty()) {
+        allDrugs = allDrugs.stream()
+                .filter(drug -> drug.getName().toLowerCase().contains(search.toLowerCase()))
+                .toList();
+    }
+    // Limit the result
+    return allDrugs.stream().limit(limit).toList();
+}
 
     
     @PostMapping("/validate")
