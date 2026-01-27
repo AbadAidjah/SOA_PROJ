@@ -38,7 +38,7 @@ services:
       test:    "test -f mvnw && ./mvnw -q test || mvn -q test || true"
     docker:
       dockerfile: pharmacie/demo/Dockerfile
-      context: .
+      context: pharmacie/demo
 
   # -------------------------
   # 2) validation (Java/Maven)
@@ -52,7 +52,7 @@ services:
       test:    "test -f mvnw && ./mvnw -q test || mvn -q test || true"
     docker:
       dockerfile: validation/demo/Dockerfile
-      context: .
+      context: validation/demo
 
   # -----------------------------------
   # 3) prescription-service (Java/Maven)
@@ -66,7 +66,7 @@ services:
       test:    "test -f mvnw && ./mvnw -q test || mvn -q test || true"
     docker:
       dockerfile: prescription-service/Dockerfile
-      context: .
+      context: prescription-service
 
   # -------------------------
   # 4) front (Node/React/Vite)
@@ -80,4 +80,4 @@ services:
       test:    "npm test || true"
     docker:
       dockerfile: front/Dockerfile
-      context: .
+      context: front
