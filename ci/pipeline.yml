@@ -4,7 +4,7 @@ toolchain:
   mode: container
   images:
     # Use versions you want; pipeline just uses these strings as docker images.
-    java-maven: maven:3.9.6-eclipse-temurin-17
+    java-maven: maven:3.9.6-eclipse-temurin-21
     nodejs:  node:20-alpine
 
 docker:
