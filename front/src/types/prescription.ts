@@ -1,33 +1,28 @@
-export type PrescriptionStatus =
-  | 'PENDING_VALIDATION'
-  | 'RESERVED'
-  | 'COMPLETED'
-  | 'CANCELLED';
+
+
+export interface PrescriptionItem {
+  id: string;
+  drugCode: string;
+  dose: string;
+  frequency: string;
+  durationDays: number;
+  quantity: number;
+}
 
 export interface Prescription {
   id: string;
   patientName: string;
   doctorName: string;
-  medication: string;
-  dosage: string;
-  frequency: string;
-  duration: string;
-  status: PrescriptionStatus;
-  notes?: string;
+  reservationId?: string;
   createdAt: string;
-  updatedAt: string;
+  submittedAt: string;
+  items: PrescriptionItem[];
+  notes?: string;
 }
 
 export interface CreatePrescriptionRequest {
   patientName: string;
   doctorName: string;
-  medication: string;
-  dosage: string;
-  frequency: string;
-  duration: string;
+  items: Omit<PrescriptionItem, 'id'>[];
   notes?: string;
-}
-
-export interface UpdateStatusRequest {
-  status: PrescriptionStatus;
 }

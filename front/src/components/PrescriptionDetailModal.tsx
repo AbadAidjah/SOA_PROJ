@@ -46,12 +46,7 @@ export default function PrescriptionDetailModal({
               </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <p className="text-gray-900 bg-blue-50 px-3 py-2 rounded font-semibold text-blue-800">
-                {prescription.status.replace(/_/g, ' ')}
-              </p>
-            </div>
+            {/* Status removed */}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -67,40 +62,44 @@ export default function PrescriptionDetailModal({
               <p className="text-gray-900">{prescription.doctorName}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Medication
-              </label>
-              <p className="text-gray-900">{prescription.medication}</p>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Dosage</label>
-              <p className="text-gray-900">{prescription.dosage}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Frequency
-              </label>
-              <p className="text-gray-900">{prescription.frequency}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-              <p className="text-gray-900">{prescription.duration}</p>
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Prescription Items</label>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Drug Code</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Dose</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Frequency</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Duration (days)</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {prescription.items && prescription.items.length > 0 ? (
+                      prescription.items.map(item => (
+                        <tr key={item.id}>
+                          <td className="px-4 py-2 whitespace-nowrap">{item.drugCode}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">{item.dose}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">{item.frequency}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">{item.durationDays}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">{item.quantity}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-2 text-center text-gray-400">No items</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Created</label>
               <p className="text-gray-900 text-sm">{formatDate(prescription.createdAt)}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Last Updated
-              </label>
-              <p className="text-gray-900 text-sm">{formatDate(prescription.updatedAt)}</p>
             </div>
           </div>
 

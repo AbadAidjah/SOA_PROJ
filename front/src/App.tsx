@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Plus, RefreshCw, ClipboardList } from 'lucide-react';
-import { Prescription, CreatePrescriptionRequest, PrescriptionStatus } from './types/prescription';
+import { Prescription, CreatePrescriptionRequest } from './types/prescription';
 import { prescriptionApi } from './services/prescriptionApi';
 import PrescriptionList from './components/PrescriptionList';
 import PrescriptionDetailModal from './components/PrescriptionDetailModal';
 import CreatePrescriptionModal from './components/CreatePrescriptionModal';
-import UpdateStatusModal from './components/UpdateStatusModal';
+// import removed: UpdateStatusModal
 import DeleteConfirmModal from './components/DeleteConfirmModal';
 
 function App() {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
-  const [prescriptionToUpdate, setPrescriptionToUpdate] = useState<Prescription | null>(null);
+  // status update state removed
   const [prescriptionToDelete, setPrescriptionToDelete] = useState<{ id: string; patientName: string; medication: string } | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,22 +51,7 @@ function App() {
     }
   };
 
-  const handleUpdateStatus = async (status: PrescriptionStatus) => {
-    if (!prescriptionToUpdate) return;
-
-    setIsLoading(true);
-    setError(null);
-    try {
-      await prescriptionApi.updateStatus(prescriptionToUpdate.id, { status });
-      await fetchPrescriptions();
-      setPrescriptionToUpdate(null);
-    } catch (err) {
-      setError('Failed to update prescription status. Please try again.');
-      console.error('Error updating status:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // handleUpdateStatus removed
 
   const handleDeletePrescription = async () => {
     if (!prescriptionToDelete) return;
@@ -89,9 +74,7 @@ function App() {
     setSelectedPrescription(prescription);
   };
 
-  const handleUpdateStatusClick = (prescription: Prescription) => {
-    setPrescriptionToUpdate(prescription);
-  };
+  // handleUpdateStatusClick removed
 
   const handleDeleteClick = (id: string) => {
     const prescription = prescriptions.find(p => p.id === id);
@@ -99,7 +82,9 @@ function App() {
       setPrescriptionToDelete({
         id: prescription.id,
         patientName: prescription.patientName,
-        medication: prescription.medication,
+        medication: prescription.items && prescription.items.length > 0
+          ? prescription.items.map(item => item.drugCode).join(', ')
+          : '',
       });
     }
   };
@@ -147,7 +132,7 @@ function App() {
         <PrescriptionList
           prescriptions={prescriptions}
           onViewDetails={handleViewDetails}
-          onUpdateStatus={handleUpdateStatusClick}
+          // onUpdateStatus removed
           onDelete={handleDeleteClick}
         />
       </div>
@@ -164,12 +149,7 @@ function App() {
         isLoading={isLoading}
       />
 
-      <UpdateStatusModal
-        prescription={prescriptionToUpdate}
-        onClose={() => setPrescriptionToUpdate(null)}
-        onUpdate={handleUpdateStatus}
-        isLoading={isLoading}
-      />
+      {/* UpdateStatusModal removed */}
 
       <DeleteConfirmModal
         isOpen={!!prescriptionToDelete}

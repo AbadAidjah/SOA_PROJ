@@ -1,7 +1,9 @@
 package com.prescription.demo.service;
 
 import com.prescription.demo.model.Prescription;
-import com.prescription.demo.model.PrescriptionStatus;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+// import removed: PrescriptionStatus
 import com.prescription.demo.repository.PrescriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,22 +24,35 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     @Override
     public Prescription createPrescription(Prescription prescription) {
         prescription.setCreatedAt(java.time.LocalDateTime.now());
+        prescription.setSubmittedAt(java.time.LocalDateTime.now());
+
+        // Ensure each item is linked to its parent prescription for JPA
+        if (prescription.getItems() != null) {
+            for (var item : prescription.getItems()) {
+                item.setPrescription(prescription);
+            }
+        }
+
         // Prepare drugs list for validation service
-        var drugs = prescription.getItems().stream().map(item -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", item.getDrugCode());
-            map.put("quantity", item.getQuantity());
-            return map;
-        }).collect(Collectors.toList());
+        List<Map<String, Object>> drugs = prescription.getItems() == null ? new ArrayList<>() :
+            prescription.getItems().stream().map(item -> {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("name", item.getDrugCode());
+                map.put("quantity", item.getQuantity());
+                return map;
+            }).collect(Collectors.toList());
 
         ValidationServiceClient.ValidationResult validationResult = validationServiceClient.validatePrescription(drugs);
-        if (validationResult != null && validationResult.isOk()) {
-            prescription.setStatus(PrescriptionStatus.PENDING_VALIDATION);
+        if (validationResult != null && validationResult.getReservationId() != null) {
             prescription.setReservationId(validationResult.getReservationId());
+            return prescriptionRepository.save(prescription);
         } else {
-            prescription.setStatus(PrescriptionStatus.REJECTED);
+            String reason = "Reservation could not be created. Possible drug interaction or validation failure.";
+            if (validationResult != null && validationResult.getIssues() != null && !validationResult.getIssues().isEmpty()) {
+                reason += " Issues: " + validationResult.getIssues().toString();
+            }
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, reason);
         }
-        return prescriptionRepository.save(prescription);
     }
 
     @Override
@@ -50,16 +65,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         return prescriptionRepository.findAll();
     }
 
-    @Override
-    public Prescription updateStatus(UUID id, PrescriptionStatus status) {
-        Optional<Prescription> opt = prescriptionRepository.findById(id);
-        if (opt.isPresent()) {
-            Prescription p = opt.get();
-            p.setStatus(status);
-            return prescriptionRepository.save(p);
-        }
-        throw new NoSuchElementException("Prescription not found");
-    }
+    // updateStatus method removed
 
     @Override
     public void deletePrescription(UUID id) {

@@ -1,24 +1,15 @@
-import { Prescription, PrescriptionStatus } from '../types/prescription';
-import { Eye, Trash2, Edit } from 'lucide-react';
+import { Prescription } from '../types/prescription';
+import { Eye, Trash2 } from 'lucide-react';
 
 interface PrescriptionListProps {
   prescriptions: Prescription[];
   onViewDetails: (prescription: Prescription) => void;
-  onUpdateStatus: (prescription: Prescription) => void;
   onDelete: (id: string) => void;
 }
-
-const statusColors: Record<PrescriptionStatus, string> = {
-  PENDING_VALIDATION: 'bg-yellow-100 text-yellow-800',
-  RESERVED: 'bg-blue-100 text-blue-800',
-  COMPLETED: 'bg-green-100 text-green-800',
-  CANCELLED: 'bg-red-100 text-red-800',
-};
 
 export default function PrescriptionList({
   prescriptions,
   onViewDetails,
-  onUpdateStatus,
   onDelete,
 }: PrescriptionListProps) {
   const formatDate = (dateString: string) => {
@@ -43,9 +34,6 @@ export default function PrescriptionList({
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">
                 Medication
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">
-                Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">
                 Created
@@ -74,18 +62,15 @@ export default function PrescriptionList({
                     <div className="text-sm text-gray-900">{prescription.doctorName}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{prescription.medication}</div>
-                    <div className="text-xs text-gray-500">{prescription.dosage}</div>
+                    {prescription.items && prescription.items.length > 0 ? (
+                      <div className="text-sm text-gray-900">
+                        {prescription.items.map(item => item.drugCode).join(', ')}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-gray-400">No items</div>
+                    )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        statusColors[prescription.status]
-                      }`}
-                    >
-                      {prescription.status.replace(/_/g, ' ')}
-                    </span>
-                  </td>
+                  {/* Status cell removed */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatDate(prescription.createdAt)}
                   </td>
@@ -98,13 +83,7 @@ export default function PrescriptionList({
                       >
                         <Eye className="h-5 w-5" />
                       </button>
-                      <button
-                        onClick={() => onUpdateStatus(prescription)}
-                        className="text-blue-600 hover:text-blue-900 transition-colors"
-                        title="Update status"
-                      >
-                        <Edit className="h-5 w-5" />
-                      </button>
+                      {/* Update status button removed */}
                       <button
                         onClick={() => onDelete(prescription.id)}
                         className="text-red-600 hover:text-red-900 transition-colors"

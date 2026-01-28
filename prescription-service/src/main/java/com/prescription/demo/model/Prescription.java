@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Prescription {
@@ -15,8 +16,8 @@ public class Prescription {
     @GeneratedValue
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    private PrescriptionStatus status;
+    // @Enumerated(EnumType.STRING)
+    // private PrescriptionStatus status;
 
     private LocalDateTime createdAt;
     private LocalDateTime submittedAt;
@@ -25,12 +26,13 @@ public class Prescription {
     private String reservationId; // optional
 
     @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<PrescriptionItem> items;
 
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
-    public PrescriptionStatus getStatus() { return status; }
-    public void setStatus(PrescriptionStatus status) { this.status = status; }
+    // public PrescriptionStatus getStatus() { return status; }
+    // public void setStatus(PrescriptionStatus status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getSubmittedAt() { return submittedAt; }

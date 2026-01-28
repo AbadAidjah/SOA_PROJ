@@ -26,11 +26,15 @@ public class ValidationServiceClient {
     public static class ValidationResult {
         private boolean ok;
         private String reservationId;
+        private java.util.List<java.util.Map<String, Object>> issues;
 
         public boolean isOk() { return ok; }
         public void setOk(boolean ok) { this.ok = ok; }
 
         public String getReservationId() { return reservationId; }
         public void setReservationId(String reservationId) { this.reservationId = reservationId; }
+
+        public java.util.List<java.util.Map<String, Object>> getIssues() { return issues; }
+        public void setIssues(java.util.List<java.util.Map<String, Object>> issues) { this.issues = issues; }
     }
 }

@@ -2,6 +2,7 @@
 package com.prescription.demo.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.util.UUID;
 
 @Entity
@@ -18,6 +19,7 @@ public class PrescriptionItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prescription_id")
+    @JsonBackReference
     private Prescription prescription;
 
     public UUID getId() { return id; }

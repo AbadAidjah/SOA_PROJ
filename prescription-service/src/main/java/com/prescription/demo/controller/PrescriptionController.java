@@ -1,7 +1,7 @@
 package com.prescription.demo.controller;
 
 import com.prescription.demo.model.Prescription;
-import com.prescription.demo.model.PrescriptionStatus;
+// import com.prescription.demo.model.PrescriptionStatus;
 import com.prescription.demo.service.PrescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +35,11 @@ public class PrescriptionController {
         return prescriptionService.getAllPrescriptions();
     }
 
-    @PutMapping("/{id}/status")
-    public ResponseEntity<Prescription> updateStatus(@PathVariable UUID id, @RequestBody PrescriptionStatus status) {
-        Prescription updated = prescriptionService.updateStatus(id, status);
-        return ResponseEntity.ok(updated);
-    }
+    // @PutMapping("/{id}/status")
+    // public ResponseEntity<Prescription> updateStatus(@PathVariable UUID id, @RequestBody PrescriptionStatus status) {
+    //     Prescription updated = prescriptionService.updateStatus(id, status);
+    //     return ResponseEntity.ok(updated);
+    // }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePrescription(@PathVariable UUID id) {

@@ -34,7 +34,7 @@ export default function CreatePrescriptionModal({
   // Store all drugs in a ref to avoid re-rendering on every search
   const allDrugsRef = useRef<{ id: string; name: string }[]>([]);
   const [drugs, setDrugs] = useState<{ id: string; name: string }[]>([]);
-  const [drugSearch, setDrugSearch] = useState('');
+  const [drugSearch, setDrugSearch] = useState<string[]>(['']);
   const [loadingDrugs, setLoadingDrugs] = useState(false);
   const [drugsError, setDrugsError] = useState<string|null>(null);
 
@@ -52,15 +52,18 @@ export default function CreatePrescriptionModal({
 
   useEffect(() => {
     if (!isOpen) return;
+    // Fetch drugs for all search fields (could be optimized to fetch only for changed idx)
     setLoadingDrugs(true);
-    prescriptionApi.getDrugs(drugSearch, 50)
+    const lastIdx = items.length - 1;
+    const search = drugSearch[lastIdx] || '';
+    prescriptionApi.getDrugs(search, 50)
       .then((data) => {
         const mapped = Array.isArray(data) ? data.filter(Boolean).map((d) => ({ id: d.id || d, name: d.name || d })) : [];
         setDrugs(mapped);
       })
       .catch(() => setDrugsError('Failed to load drugs'))
       .finally(() => setLoadingDrugs(false));
-  }, [drugSearch, isOpen]);
+  }, [drugSearch, isOpen, items.length]);
 
 
   if (!isOpen) return null;
@@ -82,10 +85,12 @@ export default function CreatePrescriptionModal({
 
   const addItem = () => {
     setItems(prev => ([...prev, { drugCode: '', dose: '', frequency: '', durationDays: 1, quantity: 1 }]));
+    setDrugSearch(prev => ([...prev, '']));
   };
 
   const removeItem = (idx: number) => {
     setItems(prev => prev.length > 1 ? prev.filter((_, i) => i !== idx) : prev);
+    setDrugSearch(prev => prev.length > 1 ? prev.filter((_, i) => i !== idx) : prev);
   };
 
 
@@ -150,8 +155,11 @@ export default function CreatePrescriptionModal({
                   <input
                     type="text"
                     placeholder="Search drug..."
-                    value={drugSearch}
-                    onChange={e => setDrugSearch(e.target.value)}
+                    value={drugSearch[idx] || ''}
+                    onChange={e => {
+                      const value = e.target.value;
+                      setDrugSearch(prev => prev.map((s, i) => i === idx ? value : s));
+                    }}
                     className="w-full px-2 py-1 border border-gray-300 rounded-lg mb-1"
                   />
                   <select
