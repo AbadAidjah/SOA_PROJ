@@ -54,7 +54,18 @@ export const prescriptionApi = {
       body: JSON.stringify(data),
     });
     if (!response.ok) {
-      throw new Error('Failed to create prescription');
+      let errorText = 'Failed to create prescription';
+      try {
+        const errorData = await response.json();
+        // Check for drug interaction in error message or issues
+        if (
+          (typeof errorData.error === 'string' && errorData.error.toLowerCase().includes('interaction')) ||
+          (errorData.issues && JSON.stringify(errorData.issues).toLowerCase().includes('interaction'))
+        ) {
+          errorText = 'interaction';
+        }
+      } catch {}
+      throw new Error(errorText);
     }
     return response.json();
   },

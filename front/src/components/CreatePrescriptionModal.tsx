@@ -16,6 +16,7 @@ interface CreatePrescriptionModalProps {
   onClose: () => void;
   onSubmit: (data: any) => void;
   isLoading: boolean;
+  interactionError?: string | null;
 }
 
 
@@ -24,7 +25,19 @@ export default function CreatePrescriptionModal({
   onClose,
   onSubmit,
   isLoading,
+  interactionError,
 }: CreatePrescriptionModalProps) {
+  // Local toast state for drug interaction
+  const [localToast, setLocalToast] = useState<string | null>(null);
+
+  // Show toast if interactionError is set from parent
+  useEffect(() => {
+    if (interactionError) {
+      setLocalToast('This prescription has drug interactions. Please review the medications.');
+    } else {
+      setLocalToast(null);
+    }
+  }, [interactionError]);
   const [patientName, setPatientName] = useState('');
   const [doctorName, setDoctorName] = useState('');
   const [notes, setNotes] = useState('');
@@ -36,6 +49,8 @@ export default function CreatePrescriptionModal({
   const [drugs, setDrugs] = useState<{ id: string; name: string }[][]>([[]]);
   const [loadingDrugs, setLoadingDrugs] = useState<boolean[]>([false]);
   const [drugsError, setDrugsError] = useState<(string|null)[]>([null]);
+
+  // Toast for drug interaction errors (controlled by parent)
 
 
   // Fetch drugs for a specific item index
@@ -78,14 +93,29 @@ export default function CreatePrescriptionModal({
   // When modal opens, initialize arrays for each item
   useEffect(() => {
     if (!isOpen) return;
-    setDrugSearch(items.map((_, i) => drugSearch[i] || ''));
-    setDrugs(items.map((_, i) => drugs[i] || []));
-    setLoadingDrugs(items.map((_, i) => loadingDrugs[i] || false));
-    setDrugsError(items.map((_, i) => drugsError[i] || null));
-    // Optionally, fetch for all items
-    items.forEach((_, idx) => fetchDrugsForItem(idx, drugSearch[idx] || ''));
+    // Reset modal state on open
+    setPatientName('');
+    setDoctorName('');
+    setNotes('');
+    setItems([{ drugCode: '', dose: '', frequency: '', durationDays: 1, quantity: 1 }]);
+    setDrugSearch(['']);
+    setDrugs([[]]);
+    setLoadingDrugs([false]);
+    setDrugsError([null]);
+    // Always fetch for all items, even if search is empty
+    fetchDrugsForItem(0, '');
     // eslint-disable-next-line
   }, [isOpen]);
+
+  // Always fetch drugs for new items
+  useEffect(() => {
+    items.forEach((_, idx) => {
+      if (!drugs[idx] || drugs[idx].length === 0) {
+        fetchDrugsForItem(idx, '');
+      }
+    });
+    // eslint-disable-next-line
+  }, [items.length]);
 
   // When items are added/removed, sync arrays
   useEffect(() => {
@@ -101,12 +131,7 @@ export default function CreatePrescriptionModal({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      patientName,
-      doctorName,
-      items,
-      notes,
-    });
+    onSubmit({ patientName, doctorName, items, notes });
   };
 
   const handleItemChange = (idx: number, field: keyof PrescriptionItem, value: string | number) => {
@@ -133,6 +158,13 @@ export default function CreatePrescriptionModal({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{ background: 'rgba(10,24,34,0.95)' }}>
+      {/* Toast for drug interaction error, always above modal */}
+      {localToast && (
+        <div style={{ position: 'fixed', top: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 9999 }}
+          className="bg-red-600 text-white px-4 py-2 rounded shadow-lg text-sm max-w-xs text-center">
+          {localToast}
+        </div>
+      )}
       <div className="rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto" style={{ background: 'var(--color-bg-dark)', color: 'var(--color-white)' }}>
         <div className="sticky top-0 px-6 py-4 flex justify-between items-center rounded-t-lg" style={{ background: 'var(--color-green-accent)', color: 'var(--color-bg-dark)' }}>
           <h2 className="text-2xl font-bold">Create New Prescription</h2>
@@ -211,10 +243,10 @@ export default function CreatePrescriptionModal({
                     style={{ background: 'var(--color-bg-dark)', color: 'var(--color-white)', borderColor: 'var(--color-green-accent)' }}
                   >
                     <option value="">Select</option>
-                    {drugs[idx] && drugs[idx].map(drug => (
+                    {(drugs[idx] ?? []).map(drug => (
                       <option key={drug.id} value={drug.name}>{drug.name}</option>
                     ))}
-                    {drugs[idx] && drugs[idx].length === 50 && <option disabled>...and more</option>}
+                    {(drugs[idx] ?? []).length === 50 && <option disabled>...and more</option>}
                   </select>
                 </div>
                 <div>

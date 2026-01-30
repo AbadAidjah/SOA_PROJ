@@ -17,6 +17,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [interactionError, setInteractionError] = useState<string | null>(null);
 
   const fetchPrescriptions = async () => {
     setIsRefreshing(true);
@@ -39,12 +40,18 @@ function App() {
   const handleCreatePrescription = async (data: CreatePrescriptionRequest) => {
     setIsLoading(true);
     setError(null);
+    setInteractionError(null);
     try {
       await prescriptionApi.create(data);
       await fetchPrescriptions();
-      setIsCreateModalOpen(false);
-    } catch (err) {
-      setError('Failed to create prescription. Please try again.');
+      setIsCreateModalOpen(false); // Only closes after successful creation
+    } catch (err: any) {
+      // Detect drug interaction error
+      if (err instanceof Error && err.message.toLowerCase().includes('interaction')) {
+        setInteractionError('This prescription has drug interactions. Please review the medications.');
+      } else {
+        setError('Failed to create prescription. Please try again.');
+      }
       console.error('Error creating prescription:', err);
     } finally {
       setIsLoading(false);
@@ -146,9 +153,13 @@ function App() {
 
       <CreatePrescriptionModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setInteractionError(null);
+        }}
         onSubmit={handleCreatePrescription}
         isLoading={isLoading}
+        interactionError={interactionError}
       />
 
       {/* UpdateStatusModal removed */}
