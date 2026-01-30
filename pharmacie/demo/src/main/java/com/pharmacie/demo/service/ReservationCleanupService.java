@@ -1,3 +1,4 @@
+
 package com.pharmacie.demo.service;
 
 import com.pharmacie.demo.model.Reservation;
@@ -9,6 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.pharmacie.demo.repository.PrescriptionRepository;
 import com.pharmacie.demo.model.Prescription;
+import com.pharmacie.demo.repository.ReservationLineRepository;
+import com.pharmacie.demo.repository.StockItemRepository;
+import com.pharmacie.demo.model.ReservationLine;
+import com.pharmacie.demo.model.StockItem;
 
 @Service
 public class ReservationCleanupService {
@@ -16,9 +21,13 @@ public class ReservationCleanupService {
         private PrescriptionRepository prescriptionRepository;
     @Autowired
     private ReservationRepository reservationRepository;
+    @Autowired 
+    private ReservationLineRepository reservationLineRepository;
+     @Autowired
+    private StockItemRepository stockItemRepository;
 
 
-    @Scheduled(fixedRate = 3600000) // every hour
+    @Scheduled(fixedRate = 3600000) 
     public void cleanupReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
         List<String> validReservationIds = prescriptionRepository.findAll().stream()
@@ -28,6 +37,20 @@ public class ReservationCleanupService {
         List<Reservation> toDelete = reservations.stream()
             .filter(r -> !validReservationIds.contains(r.getReservationId()))
             .collect(Collectors.toList());
-        toDelete.forEach(r -> reservationRepository.deleteById(r.getReservationId()));
+        for (Reservation reservation : toDelete) {
+        
+            List<ReservationLine> lines = reservationLineRepository.findAll().stream()
+                .filter(line -> reservation.getReservationId().equals(
+                    line.getReservation() != null ? line.getReservation().getReservationId() : null))
+                .collect(Collectors.toList());
+            for (ReservationLine line : lines) {
+                stockItemRepository.findByDrugCode(line.getDrugCode()).ifPresent(stock -> {
+                    stock.setQuantityAvailable(stock.getQuantityAvailable() + line.getQtyReserved());
+                    stockItemRepository.save(stock);
+                });
+                reservationLineRepository.delete(line);
+            }
+            reservationRepository.deleteById(reservation.getReservationId());
+        }
     }
 }

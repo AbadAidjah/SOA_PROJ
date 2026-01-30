@@ -49,6 +49,7 @@ function App() {
       // Detect drug interaction error
       if (err instanceof Error && err.message.toLowerCase().includes('interaction')) {
         setInteractionError('This prescription has drug interactions. Please review the medications.');
+        // Do NOT set generic error for interaction
       } else {
         setError('Failed to create prescription. Please try again.');
       }
@@ -156,10 +157,11 @@ function App() {
         onClose={() => {
           setIsCreateModalOpen(false);
           setInteractionError(null);
+          setError(null); // Clear parent error when closing modal
         }}
         onSubmit={handleCreatePrescription}
         isLoading={isLoading}
-        interactionError={interactionError}
+        interactionError={interactionError || error}
       />
 
       {/* UpdateStatusModal removed */}

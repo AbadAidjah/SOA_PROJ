@@ -33,7 +33,8 @@ export default function CreatePrescriptionModal({
   // Show toast if interactionError is set from parent
   useEffect(() => {
     if (interactionError) {
-      setLocalToast('This prescription has drug interactions. Please review the medications.');
+      // setLocalToast('This prescription has drug interactions. Please review the medications.');
+      setLocalToast(interactionError);
     } else {
       setLocalToast(null);
     }
@@ -107,6 +108,15 @@ export default function CreatePrescriptionModal({
     // eslint-disable-next-line
   }, [isOpen]);
 
+  // Always fetch drugs for all items on items change (e.g. after add)
+  useEffect(() => {
+    if (!isOpen) return;
+    items.forEach((_, idx) => {
+      fetchDrugsForItem(idx, '');
+    });
+    // eslint-disable-next-line
+  }, [items.length, isOpen]);
+
   // Always fetch drugs for new items
   useEffect(() => {
     items.forEach((_, idx) => {
@@ -159,7 +169,7 @@ export default function CreatePrescriptionModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{ background: 'rgba(10,24,34,0.95)' }}>
       {/* Toast for drug interaction error, always above modal */}
-      {localToast && (
+      {localToast && isOpen && (
         <div style={{ position: 'fixed', top: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 9999 }}
           className="bg-red-600 text-white px-4 py-2 rounded shadow-lg text-sm max-w-xs text-center">
           {localToast}
