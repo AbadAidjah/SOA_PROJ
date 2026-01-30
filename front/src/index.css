@@ -1,3 +1,34 @@
+/* Custom color palette from project branding */
+:root {
+	--color-bg-dark: #0A1822;
+	--color-green-accent: #A3FF12;
+	--color-green-light: #D4FF8F;
+	--color-white: #FFFFFF;
+}
+
+body {
+	background: var(--color-bg-dark);
+	color: var(--color-white);
+}
+
+/* Example usage for buttons and highlights */
+.btn-primary {
+	background: var(--color-green-accent);
+	color: var(--color-bg-dark);
+}
+
+.btn-primary:hover {
+	background: var(--color-green-light);
+}
+
+.highlight {
+	color: var(--color-green-accent);
+}
+
+.card, .modal {
+	background: #112233;
+	color: var(--color-white);
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

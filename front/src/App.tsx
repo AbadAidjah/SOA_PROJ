@@ -90,33 +90,35 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+    <div className="min-h-screen" style={{ background: 'var(--color-bg-dark)', color: 'var(--color-white)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-3 rounded-lg">
-                <ClipboardList className="h-8 w-8 text-white" />
+              <div style={{ background: 'var(--color-green-accent)' }} className="p-3 rounded-lg">
+                <ClipboardList className="h-8 w-8" style={{ color: 'var(--color-bg-dark)' }} />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Prescription Management</h1>
-                <p className="text-gray-600 mt-1">Manage and track all prescriptions</p>
+                <h1 className="text-3xl font-bold" style={{ color: 'var(--color-white)' }}>Prescription Management</h1>
+                <p className="mt-1" style={{ color: 'var(--color-green-light)' }}>Manage and track all prescriptions</p>
               </div>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={fetchPrescriptions}
                 disabled={isRefreshing}
-                className="flex items-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 btn-primary border-0 rounded-lg transition-colors disabled:opacity-50"
+                style={{ background: 'var(--color-green-light)', color: 'var(--color-bg-dark)' }}
               >
-                <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} style={{ color: 'var(--color-bg-dark)' }} />
                 Refresh
               </button>
               <button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 btn-primary rounded-lg transition-colors"
+                style={{ background: 'var(--color-green-accent)', color: 'var(--color-bg-dark)' }}
               >
-                <Plus className="h-5 w-5" />
+                <Plus className="h-5 w-5" style={{ color: 'var(--color-bg-dark)' }} />
                 New Prescription
               </button>
             </div>
@@ -124,7 +126,7 @@ function App() {
         </div>
 
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="mb-6" style={{ background: '#2a1a1a', border: '1px solid #ffb3b3', color: '#ff6b6b', padding: '1rem', borderRadius: '0.5rem' }}>
             {error}
           </div>
         )}
